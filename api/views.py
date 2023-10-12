@@ -20,6 +20,7 @@ def user(request):
             serializer.save()
             return Response(serializer.data, status=HTTP_201_CREATED)
         
+        
 @api_view(['GET', 'PUT', 'DELETE'])
 @permission_classes([UserDetailPermission])
 def user_detail(request, pk):
@@ -28,20 +29,21 @@ def user_detail(request, pk):
         serializer = UserSerializer(user)
         return Response(serializer.data, status=HTTP_202_ACCEPTED)
     elif request.method == 'PUT':
-        serializer = UserSerializer(data=request.data)
+        serializer = UserSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=HTTP_202_ACCEPTED)
+        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
         user.delete() 
-        return Response (status=HTTP_204_NO_CONTENT)
+        return Response(status=HTTP_204_NO_CONTENT)
 
 
 
 from app.models import Task
 from .serializers import TaskSerializer
 
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 @permission_classes([TaskPermission])
 def task(request):
     if request.method == 'GET':
@@ -49,7 +51,7 @@ def task(request):
         serializer = TaskSerializer(tasks, many=True)
         return Response(serializer.data, status=HTTP_200_OK)
     elif request.method == 'POST':
-        serializer = TaskSerializer(request.data)
+        serializer = TaskSerializer(tasks, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=HTTP_201_CREATED)
@@ -58,40 +60,43 @@ def task(request):
 @api_view(['GET', 'PUT', 'DELETE'])
 @permission_classes([TaskDetailPermission])
 def task_detail(request, pk):
-    user = Task.objects.get(pk=pk)
+    task = Task.objects.get(pk=pk)
     if request.method == 'GET':
         serializer = TaskSerializer(task)
         return Response(serializer.data, status=HTTP_202_ACCEPTED)
     elif request.method == 'PUT':
-        serializer = TaskSerializer(request.data)
+        serializer = TaskSerializer(task, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()    
             return Response(serializer.data, status=HTTP_202_ACCEPTED)
+        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
-        user.delete() 
+        task.delete() 
         return Response (status=HTTP_204_NO_CONTENT)
     
 
 from app.models import Project
 from .serializers import ProjectSerializer
 
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 @permission_classes([ProjectPermission])
 def project(request):
+    project = Project.objects.all()
     if request.method == 'GET':
-        projects = Project.objects.all()
-        serializer = ProjectSerializer(projects, many=True)
+        serializer = ProjectSerializer(project, many=True)
         return Response(serializer.data, status=HTTP_200_OK)
     elif request.method == 'POST':
-        serializer = ProjectSerializer(request.data)
+        serializer = ProjectSerializer(project, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=HTTP_201_CREATED)
+        return Response(serializer.errors,status=HTTP_400_BAD_REQUEST)
+
         
 @api_view(['GET', 'PUT', 'DELETE'])
 @permission_classes([ProjectDetailPermission])
 def project_detail(request, pk):
-    user = Project.objects.get(pk=pk)
+    project = Project.objects.get(pk=pk)
     if request.method == 'GET':
         serializer = ProjectSerializer(project)
         return Response(serializer.data, status=HTTP_202_ACCEPTED)
@@ -100,7 +105,8 @@ def project_detail(request, pk):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=HTTP_202_ACCEPTED)
+        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
-        user.delete() 
-        return Response (status=HTTP_204_NO_CONTENT)
+        project.delete() 
+        return Response(status=HTTP_204_NO_CONTENT)
 

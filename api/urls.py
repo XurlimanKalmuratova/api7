@@ -7,5 +7,7 @@ urlpatterns = [
     path('task/', task),
     path('task/<int:pk>/', task_detail),
     path('project/', project),
-    path('project/<int:pk>', project_detail)
+    path('project/<int:pk>', project_detail),
+
+    path('auth/', include('dj_rest_auth.urls'))
 ]

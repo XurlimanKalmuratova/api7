@@ -5,7 +5,7 @@ from app.models import CustomUser, Task, Project
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = '__all__'
+        fields = ['id', 'username', 'password']
 
 
 class ProjectSerializer(serializers.ModelSerializer):

@@ -19,7 +19,9 @@ class UserDetailPermission(BasePermission):
 class TaskPermission(BasePermission):
     
     def has_permission(self, request, view):
-        if request.method in [ 'GET', 'POST']:
+        if request.method ==  'GET':
+            return request.user.is_authenticated
+        elif request.method == 'POST':
             return request.user.is_authenticated
 
 
